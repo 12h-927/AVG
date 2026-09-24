@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+}
+
+#app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== 左侧地图区域 ===== */
+#canvas-wrapper {
+    flex: 1;
+    overflow: auto;
+    background: #0f0f1a;
+    padding: 10px;
+}
+
+#map-canvas {
+    display: block;
+    background: #2a2a2a;
+}
+
+/* ===== 右侧控制面板 ===== */
+#panel {
+    width: 320px;
+    background: #16213e;
+    padding: 20px;
+    overflow-y: auto;
+    border-left: 2px solid #0f3460;
+}
+
+#panel h1 {
+    font-size: 20px;
+    color: #00adb5;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ===== 按钮组 ===== */
+.control-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-start { background: #00b894; }
+.btn-stop { background: #d63031; }
+.btn-reset { background: #6c5ce7; }
+
+/* ===== 统计信息 ===== */
+.stats {
+    background: #0f3460;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #1a1a3e;
+}
+
+.stat-item:last-child { border-bottom: none; }
+
+.stat-label {
+    color: #a0a0c0;
+    font-size: 13px;
+}
+
+.stat-value {
+    color: #00adb5;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#finish-banner {
+    background: #1b5e20;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 8px;
+}
+
+#finish-banner .stat-label { color: #4caf50; }
+#finish-banner .stat-value { color: #81c784; }
+
+/* ===== 图例 ===== */
+.legend {
+    background: #0f3460;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.legend h3 {
+    font-size: 14px;
+    color: #00adb5;
+    margin-bottom: 10px;
+}
+
+.legend div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: #c0c0e0;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* ===== WebSocket 状态 ===== */
+#ws-status {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    padding: 8px;
+    background: #0f3460;
+    border-radius: 6px;
+}
+
+#ws-indicator.connected { color: #00b894; }
+#ws-indicator.disconnected { color: #d63031; }
+#ws-indicator.connecting { color: #fdcb6e; }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV 物流调度平台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 左侧：地图画布 -->
+        <div id="canvas-wrapper">
+            <canvas id="map-canvas"></canvas>
+        </div>
+
+        <!-- 右侧：控制面板 -->
+        <div id="panel">
+            <h1>AGV 物流调度平台</h1>
+
+            <div class="control-group">
+                <button id="btn-start" class="btn btn-start">开始仿真</button>
+                <button id="btn-stop" class="btn btn-stop" disabled>停止仿真</button>
+                <button id="btn-reset" class="btn btn-reset">重置</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">搬运数量</span>
+                    <span id="stat-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">繁忙机器人</span>
+                    <span id="stat-busy" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">机器人总数</span>
+                    <span id="stat-total" class="stat-value">50</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">卡车货物</span>
+                    <span id="stat-cargo" class="stat-value">0/5000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">路上的货物</span>
+                    <span id="stat-onroad" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">补货次数</span>
+                    <span id="stat-orders" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">单次最大补货</span>
+                    <span id="stat-distri" class="stat-value">300</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">仿真时间</span>
+                    <span id="stat-time" class="stat-value">0分0秒</span>
+                </div>
+                <div class="stat-item" id="finish-banner" style="display:none">
+                    <span class="stat-label" style="color:green">完成</span>
+                    <span id="stat-finish" class="stat-value"></span>
+                </div>
+            </div>
+
+            <div class="legend">
+                <h3>颜色说明</h3>
+                <div><span class="dot" style="background:#5ac1fa"></span> AGV 空闲</div>
+                <div><span class="dot" style="background:#b428d2"></span> AGV 有任务</div>
+                <div><span class="dot" style="background:#7a9cb8"></span> AGV 即将到站</div>
+                <div><span class="dot" style="background:#d22828"></span> AGV 冲突</div>
+                <div><span class="dot" style="background:#d28c28"></span> AGV 装卸货</div>
+                <div><span class="dot" style="background:#ff4b5a"></span> 载货点</div>
+                <div><span class="dot" style="background:#64c832"></span> 卸货点(开)</div>
+                <div><span class="dot" style="background:#ff0000"></span> 卸货点(关)</div>
+            </div>
+
+            <div id="ws-status">WebSocket: <span id="ws-indicator">未连接</span></div>
+        </div>
+    </div>
+
+    <script src="/static/js/simulation.js"></script>
+    <script src="/static/js/controls.js"></script>
+</body>
+</html>

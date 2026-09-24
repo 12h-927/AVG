@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv
+.idea
+.git
+.gitignore
+*.bat
+*.spec
+*.txt
+!requirements.txt

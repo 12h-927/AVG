@@ -3,5 +3,4 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: agv-logistics
     restart: unless-stopped

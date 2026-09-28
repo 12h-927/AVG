@@ -5,6 +5,7 @@
 然后通过回调推送状态给 WebSocket 客户端。
 """
 import asyncio
+import threading
 from core.config import config
 from core.asearch import A_Search, point
 from core import task_generator
@@ -19,6 +20,10 @@ class SimulationEngine:
     def __init__(self):
         self.state = SimulationState.get_instance()
         self._task = None  # asyncio.Task 引用
+        self._broadcast = None
+        # 每帧 tick 完成后 set，tick 开始前 clear；用于 reset 时等待在途线程收尾
+        self._frame_done = threading.Event()
+        self._frame_done.set()
 
     @classmethod
     def get_instance(cls):
@@ -39,27 +44,43 @@ class SimulationEngine:
     def stop(self):
         """停止仿真循环。"""
         self.state.running = False
-        if self._task is not None and not self._task.done():
-            self._task.cancel()
+        if self._task is not None:
+            if not self._task.done():
+                self._task.cancel()
             self._task = None
         return True
 
-    def reset(self):
-        """重置仿真。"""
-        was_running = self.state.running
-        self.stop()
-        self.state.reset()
+    async def reset(self):
+        """重置仿真：先等在途 tick 线程结束，再换成全新 state 对象。"""
+        self.state.running = False
+        if self._task is not None and not self._task.done():
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+        self._task = None
+        # cancel 打不断正在 to_thread 里跑的 _tick，等它真正写完（最多 3 秒）
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._frame_done.wait, 3.0)
+        self._frame_done.set()
+        # 用全新 state 替换（同步更新单例引用），与残留线程彻底隔离
+        self.state = SimulationState()
+        SimulationState._instance = self.state
         return True
 
     async def _loop(self):
         """主仿真循环：每 100ms 跑一帧。"""
         try:
             while self.state.running:
+                self._frame_done.clear()
+                state = self.state  # 当帧捕获，reset 换新对象后旧线程只写旧对象
                 # CPU 密集的 _tick 放到线程池执行，避免阻塞 asyncio 事件循环
-                await asyncio.to_thread(self._tick)
+                await asyncio.to_thread(self._tick, state)
+                self._frame_done.set()
                 # 推送状态
                 if self._broadcast is not None:
-                    snapshot = self.state.get_status()
+                    snapshot = state.get_status()
                     await self._broadcast(snapshot)
                 await asyncio.sleep(0.1)
         except asyncio.CancelledError:
@@ -69,11 +90,11 @@ class SimulationEngine:
             import traceback
             traceback.print_exc()
             self.state.running = False
+        finally:
+            self._frame_done.set()
 
-    def _tick(self):
+    def _tick(self, state):
         """单帧逻辑：对应原 start_Search 一轮 + timerEvent 的装卸货处理。"""
-        state = self.state
-
         # ===== 1. 卸货点货物堆积处理 =====
         for i in range(len(state.downPointList)):
             if state.downPointList[i].goodsCount >= config.MaxloadR:

@@ -2,6 +2,8 @@
 
 启动命令：uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 """
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -12,7 +14,18 @@ from api.ws import manager
 from engine.state import SimulationState
 from engine.simulation import SimulationEngine
 
-app = FastAPI(title="AGV 物流调度平台", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """启动时初始化仿真状态。"""
+    SimulationState.get_instance()
+    SimulationEngine.get_instance()
+    print("AGV 物流调度平台启动完成")
+    print("访问 http://localhost:8000 查看仿真界面")
+    yield
+
+
+app = FastAPI(title="AGV 物流调度平台", version="1.0.0", lifespan=lifespan)
 
 # 注册 REST 路由
 app.include_router(router)
@@ -34,15 +47,6 @@ async def ws_simulation(websocket: WebSocket):
     except Exception as e:
         print(f"WebSocket 异常: {e}")
         manager.disconnect(websocket)
-
-
-@app.on_event("startup")
-async def on_startup():
-    """启动时初始化仿真状态。"""
-    SimulationState.get_instance()
-    SimulationEngine.get_instance()
-    print("AGV 物流调度平台启动完成")
-    print("访问 http://localhost:8000 查看仿真界面")
 
 
 # 挂载静态文件

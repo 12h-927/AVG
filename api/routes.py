@@ -30,7 +30,7 @@ async def stop_simulation():
 async def reset_simulation():
     """重置仿真。"""
     engine = SimulationEngine.get_instance()
-    engine.reset()
+    await engine.reset()
     return {"ok": True, "running": False}
 
 

@@ -101,6 +101,9 @@ class config:
         cls.check = 0
         cls.pick = []
         cls.pick1 = []
+        cls.pickPoint = []
+        cls.loadPs = 1  # 恢复类定义初值，否则重置后无初始任务
+        cls.loadPM = 1
         cls.cargo = cls.cargoMax
         cls.distriCenterCurr = 0
         cls.checkR = 0
@@ -127,6 +130,10 @@ class config:
         cls.END_POINTup = []
         cls.END_POINTdown = []
         cls.END_POINTfront = []
+        cls.parX = 3  # 停车点生成游标，必须复位，否则重置后坐标越界
+        cls.parY = 1
+        cls.parX_t = 5
+        cls.parY_t = 3
 
         # ===== 机器人初始位置（随机）=====
         for i in range(1, cls.MAX_ROBOT_COUNT + 1):
